@@ -1,0 +1,4 @@
+import type { OrderStatus } from "@prisma/client";
+import prisma from "../../config/db.js";
+const pendingStatuses: OrderStatus[] = ["PENDING", "CONFIRMED", "PROCESSING", "PAID", "SHIPPED", "SHIPPING", "OUT_FOR_DELIVERY"];
+export class AccountDAO { async getOverview(userId: string) { const [user, totalOrders, pendingOrders, wishlistCount, recentOrders] = await Promise.all([prisma.user.findUnique({ where: { id: userId }, select: { name: true, email: true, avatar: true, logoUrl: true } }), prisma.order.count({ where: { userId } }), prisma.order.count({ where: { userId, status: { in: pendingStatuses } } }), prisma.wishlist.count({ where: { userId } }), prisma.order.findMany({ where: { userId }, orderBy: { createdAt: "desc" }, take: 5, select: { id: true, createdAt: true, status: true, totalAmount: true } })]); return { user, totalOrders, pendingOrders, wishlistCount, recentOrders }; } }

@@ -1,46 +1,33 @@
-import { useEffect, useState } from "react";
-import type { User } from "./types/user.types";
+import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
+import { Search, X } from "lucide-react";
+import type { Role, UpdateUser, User } from "./types/user.types";
 import { userService } from "./services/userService";
 import { UserTable } from "./components/UserTable";
+import { DataTablePagination } from "@/components/DataTablePagination";
+
+const PAGE_SIZE = 10;
+const inputClass = "mt-1 w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100";
 
 export const UserPage = () => {
-    const [users, setUsers] = useState<User[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-
-    const fetchUsers = async () => {
-        setIsLoading(true);
-        try {
-            const res = await userService.getUsers();
-            setUsers(res.data.data);
-        } catch (err: unknown) {
-            console.error("Failed to fetch users:", err);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchUsers();
-    }, []);
-
-    return (
-        <div className="space-y-4">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-xl font-bold text-gray-900">Users</h1>
-                    <p className="text-sm text-gray-500">Manage your system users</p>
-                </div>
-            </div>
-
-            {isLoading ? (
-                <div className="flex items-center justify-center py-12 text-sm text-gray-500">
-                    Loading users...
-                </div>
-            ) : (
-                <UserTable users={users} />
-            )}
-        </div>
-    );
+    const [users, setUsers] = useState<User[]>([]); const [isLoading, setIsLoading] = useState(false); const [deleteTarget, setDeleteTarget] = useState<User | null>(null); const [deleting, setDeleting] = useState(false); const [error, setError] = useState(""); const [search, setSearch] = useState(""); const [role, setRole] = useState<"ALL" | Role>("ALL"); const [editing, setEditing] = useState<User | null>(null); const [saving, setSaving] = useState(false); const [page, setPage] = useState(1);
+    const fetchUsers = async () => { setIsLoading(true); try { const res = await userService.getUsers(); setUsers(res.data.data); setError(""); } catch { setError("Không thể tải danh sách người dùng."); } finally { setIsLoading(false); } };
+    useEffect(() => { void fetchUsers(); }, []);
+    const filteredUsers = useMemo(() => users.filter((user) => (!search || `${user.name} ${user.email}`.toLowerCase().includes(search.toLowerCase())) && (role === "ALL" || user.role === role)), [users, search, role]);
+    const totalPages = Math.max(1, Math.ceil(filteredUsers.length / PAGE_SIZE)); const visibleUsers = filteredUsers.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+    const updateUser = async (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); if (!editing) return; setSaving(true); try { const form = new FormData(event.currentTarget); const imageUrl = String(form.get("avatarUrl") || "") || undefined; const payload: UpdateUser = { id: editing.id, email: String(form.get("email")), name: String(form.get("name")), phone: String(form.get("phone") || ""), role: String(form.get("role")) as Role, status: String(form.get("status")) as UpdateUser["status"], gender: (String(form.get("gender")) || undefined) as UpdateUser["gender"], logoUrl: imageUrl, avatar: imageUrl, provider: String(form.get("provider")) as UpdateUser["provider"], providerId: String(form.get("providerId") || "") || undefined, emailVerifiedAt: form.get("emailVerified") === "on" ? (editing.emailVerifiedAt ?? new Date().toISOString()) : null, phoneVerifiedAt: form.get("phoneVerified") === "on" ? (editing.phoneVerifiedAt ?? new Date().toISOString()) : null, dateOfBirth: String(form.get("dateOfBirth") || "") || undefined }; await userService.updateUser(payload); setEditing(null); await fetchUsers(); } catch { setError("Không thể cập nhật người dùng."); } finally { setSaving(false); } };
+    const deleteUser = async () => { if (!deleteTarget) return; setDeleting(true); try { await userService.deleteUser(deleteTarget.id); setDeleteTarget(null); await fetchUsers(); } catch { setError("Không thể xóa người dùng."); } finally { setDeleting(false); } };
+    return <div className="space-y-4"><div><h1 className="text-xl font-bold text-gray-900">Người dùng</h1><p className="text-sm text-gray-500">Quản lý tài khoản và phân quyền</p></div>{error && <p className="rounded-lg border border-red-100 bg-red-50 p-3 text-sm text-red-700" role="alert">{error}</p>}<div className="flex flex-wrap gap-3 rounded-xl border border-gray-200 bg-white p-3 shadow-sm"><label className="relative min-w-56 flex-1"><Search className="absolute left-3 top-2.5 text-gray-400" size={16} /><input value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Tìm theo tên hoặc email..." className={`${inputClass} mt-0 pl-9`} /></label><select value={role} onChange={(event) => { setRole(event.target.value as "ALL" | Role); setPage(1); }} className={`${inputClass} mt-0 w-auto`}><option value="ALL">Tất cả vai trò</option><option value="ADMIN">Quản trị viên</option><option value="STAFF">Nhân viên</option><option value="CUSTOMER">Khách hàng</option></select></div>{isLoading ? <div className="rounded-xl border bg-white py-12 text-center text-sm text-gray-500">Đang tải người dùng...</div> : <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm"><UserTable users={visibleUsers} onEdit={setEditing} onDelete={setDeleteTarget} /><DataTablePagination currentPage={page} totalPages={totalPages} onPageChange={setPage} /></div>}
+        {editing && <form onSubmit={(event) => void updateUser(event)} className="fixed inset-0 z-20 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-[2px]"><div className="flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"><div className="flex items-center justify-between border-b border-gray-100 px-6 py-4"><div><p className="text-xs font-semibold uppercase tracking-wider text-gray-400">User management</p><h2 className="mt-1 text-lg font-semibold text-gray-900">Chỉnh sửa người dùng</h2><p className="text-sm text-gray-500">{editing.email}</p></div><button type="button" onClick={() => setEditing(null)} aria-label="Đóng" className="rounded-lg p-2 text-gray-400 hover:bg-gray-100"><X size={19} /></button></div><div className="overflow-y-auto px-6 py-5"><div className="grid gap-5 lg:grid-cols-2">
+            <EditSection title="Thông tin cơ bản"><div className="grid gap-4 sm:grid-cols-2"><Field label="Tên"><input name="name" required defaultValue={editing.name} className={inputClass} /></Field><Field label="Email"><input name="email" type="email" required defaultValue={editing.email} className={inputClass} /></Field><Field label="Số điện thoại"><input name="phone" defaultValue={editing.phone ?? ""} className={inputClass} /></Field><Field label="Giới tính"><select name="gender" defaultValue={editing.gender ?? ""} className={inputClass}><option value="">Chưa cập nhật</option><option value="MALE">Nam</option><option value="FEMALE">Nữ</option><option value="OTHER">Khác</option></select></Field><Field label="Ngày sinh" wide><input name="dateOfBirth" type="date" defaultValue={editing.dateOfBirth ? editing.dateOfBirth.slice(0, 10) : ""} className={inputClass} /></Field></div></EditSection>
+            <EditSection title="Phân quyền & trạng thái"><div className="grid gap-4 sm:grid-cols-2"><Field label="Vai trò"><select name="role" defaultValue={editing.role} className={inputClass}><option value="CUSTOMER">Khách hàng</option><option value="STAFF">Nhân viên</option><option value="ADMIN">Quản trị viên</option></select></Field><Field label="Trạng thái"><select name="status" defaultValue={editing.status ?? (editing.isActive ? "ACTIVE" : "INACTIVE")} className={inputClass}><option value="ACTIVE">Đang hoạt động</option><option value="INACTIVE">Tạm khóa</option><option value="BANNED">Bị cấm</option></select></Field><Field label="Nhà cung cấp"><select name="provider" defaultValue={editing.provider ?? "LOCAL"} className={inputClass}><option value="LOCAL">Local</option><option value="GOOGLE">Google</option><option value="FACEBOOK">Facebook</option></select></Field><Field label="Provider ID"><input name="providerId" defaultValue={editing.providerId ?? ""} className={inputClass} /></Field></div></EditSection>
+            <EditSection title="Ảnh đại diện"><Field label="URL ảnh đại diện" wide><input name="avatarUrl" type="url" defaultValue={editing.logoUrl ?? editing.avatar ?? ""} placeholder="https://..." className={inputClass} /></Field><p className="mt-2 text-xs text-gray-500">Một URL dùng chung cho logo và avatar trên hệ thống.</p></EditSection>
+            <EditSection title="Xác minh tài khoản"><div className="grid gap-3 sm:grid-cols-2"><label className="flex min-h-11 items-center gap-3 rounded-lg border border-gray-200 bg-white px-3 text-sm font-medium"><input name="emailVerified" type="checkbox" defaultChecked={Boolean(editing.emailVerifiedAt)} className="h-4 w-4 accent-gray-900" />Email đã xác minh</label><label className="flex min-h-11 items-center gap-3 rounded-lg border border-gray-200 bg-white px-3 text-sm font-medium"><input name="phoneVerified" type="checkbox" defaultChecked={Boolean(editing.phoneVerifiedAt)} className="h-4 w-4 accent-gray-900" />Số điện thoại đã xác minh</label></div><p className="mt-2 text-xs text-gray-500">Khi bật, hệ thống ghi nhận thời điểm xác minh hiện tại nếu chưa có.</p></EditSection>
+        </div><div className="mt-5 grid gap-3 rounded-xl border border-gray-100 bg-gray-50 p-4 text-xs text-gray-600 sm:grid-cols-4"><Meta label="Đăng nhập cuối" value={editing.lastLoginAt ? new Date(editing.lastLoginAt).toLocaleString("vi-VN") : "Chưa đăng nhập"} /><Meta label="Ngày tạo" value={new Date(editing.createdAt).toLocaleString("vi-VN")} /><Meta label="Cập nhật" value={new Date(editing.updatedAt).toLocaleString("vi-VN")} /><Meta label="Xóa mềm" value={editing.deletedAt ? new Date(editing.deletedAt).toLocaleString("vi-VN") : "Chưa xóa"} /></div></div><div className="flex justify-end gap-2 border-t border-gray-100 bg-white px-6 py-4"><button type="button" onClick={() => setEditing(null)} className="rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium hover:bg-gray-50">Hủy</button><button disabled={saving} className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-700 disabled:opacity-50">{saving ? "Đang lưu..." : "Lưu thay đổi"}</button></div></div></form>}
+        {deleteTarget && <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true" aria-labelledby="delete-user-title"><div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl"><h2 id="delete-user-title" className="text-lg font-semibold">Xóa người dùng?</h2><p className="mt-2 text-sm text-gray-600">Bạn có chắc muốn xóa <strong>{deleteTarget.name}</strong>?</p><div className="mt-6 flex justify-end gap-2"><button type="button" onClick={() => setDeleteTarget(null)} disabled={deleting} className="rounded border px-4 py-2 text-sm">Hủy</button><button type="button" onClick={() => void deleteUser()} disabled={deleting} className="rounded bg-red-600 px-4 py-2 text-sm text-white disabled:opacity-60">{deleting ? "Đang xóa..." : "Xóa người dùng"}</button></div></div></div>}</div>;
 };
+
+function EditSection({ title, children }: { title: string; children: ReactNode }) { return <section className="rounded-xl border border-gray-100 bg-gray-50/70 p-4"><h3 className="mb-4 text-sm font-semibold text-gray-900">{title}</h3>{children}</section>; }
+function Field({ label, wide, children }: { label: string; wide?: boolean; children: ReactNode }) { return <label className={`text-sm font-medium ${wide ? "sm:col-span-2" : ""}`}>{label}{children}</label>; }
+function Meta({ label, value }: { label: string; value: string }) { return <p><strong className="block text-gray-700">{label}</strong>{value}</p>; }
 
 export default UserPage;

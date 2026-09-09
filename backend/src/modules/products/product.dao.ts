@@ -4,7 +4,7 @@ import type {
   ProductQueryParams,
   PaginatedProducts,
 } from "./product.types.js";
-import type { CreateProductDTO, UpdateProductDTO } from "./product.dto.js";
+import type { CreateProductDTO, UpdateProductDTO, CreateProductVariantDTO, UpdateProductVariantDTO } from "./product.dto.js";
 import prisma from "../../config/db.js";
 import type { Prisma } from "@prisma/client";
 
@@ -54,9 +54,9 @@ export class ProductDAO {
 
     const where: Prisma.ProductWhereInput = {};
 
-    if (params.status) {
+    if (params.status && params.status !== "ALL") {
       where.status = params.status;
-    } else {
+    } else if (params.status !== "ALL") {
       where.status = "ACTIVE";
     }
 
@@ -172,5 +172,37 @@ export class ProductDAO {
     } catch {
       return null;
     }
+  }
+
+  async createVariant(productId: string, data: CreateProductVariantDTO) {
+    return await prisma.productVariant.create({
+      data: {
+        productId,
+        sku: data.sku,
+        attributes: data.attributes ?? {},
+        price: data.price,
+        stockQuantity: data.stockQuantity ?? 0,
+      },
+    });
+  }
+
+  async findVariantBySku(sku: string) {
+    return await prisma.productVariant.findUnique({ where: { sku } });
+  }
+
+  async findVariant(productId: string, variantId: string) {
+    return await prisma.productVariant.findFirst({ where: { id: variantId, productId } });
+  }
+
+  async updateVariant(productId: string, variantId: string, data: UpdateProductVariantDTO) {
+    const variant = await this.findVariant(productId, variantId);
+    if (!variant) return null;
+    return await prisma.productVariant.update({ where: { id: variantId }, data });
+  }
+
+  async deleteVariant(productId: string, variantId: string) {
+    const variant = await this.findVariant(productId, variantId);
+    if (!variant) return null;
+    return await prisma.productVariant.delete({ where: { id: variantId } });
   }
 }

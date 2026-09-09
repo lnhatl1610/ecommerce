@@ -1,0 +1,5 @@
+import { getOrderStatusLabel } from "@/lib/orderStatus";
+
+const colors: Record<string, string> = { PENDING: "bg-amber-50 text-amber-700", CONFIRMED: "bg-sky-50 text-sky-700", PROCESSING: "bg-violet-50 text-violet-700", PAID: "bg-sky-50 text-sky-700", SHIPPED: "bg-indigo-50 text-indigo-700", SHIPPING: "bg-indigo-50 text-indigo-700", OUT_FOR_DELIVERY: "bg-blue-50 text-blue-700", DELIVERED: "bg-emerald-50 text-emerald-700", COMPLETED: "bg-emerald-50 text-emerald-700", CANCELLED: "bg-red-50 text-red-700", PAYMENT_FAILED: "bg-red-50 text-red-700", DELIVERY_FAILED: "bg-red-50 text-red-700", RETURN_REQUESTED: "bg-orange-50 text-orange-700", RETURN_PROCESSING: "bg-orange-50 text-orange-700", REFUNDED: "bg-teal-50 text-teal-700", PARTIALLY_REFUNDED: "bg-teal-50 text-teal-700" };
+
+export function StatusBadge({ status }: { status: string }) { return <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${colors[status] ?? "bg-black/5 text-black/60"}`}>{getOrderStatusLabel(status)}</span>; }

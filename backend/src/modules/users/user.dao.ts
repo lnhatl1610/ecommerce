@@ -4,20 +4,18 @@ import prisma from "../../config/db.js";
 
 export class UserDAO {
   async create(data: CreateUserDTO): Promise<User> {
+    const { password, ...profile } = data;
     return await prisma.user.create({
       data: {
-        email: data.email,
-        password: data.password,
-        name: data.name,
-        phone: data.phone,
-        avatar: data.avatar,
-        role: data.role,
+        ...profile,
+        passwordHash: password,
       },
     });
   }
 
   async findAll(): Promise<User[]> {
     return await prisma.user.findMany({
+      where: { deletedAt: null },
       orderBy: { createdAt: "desc" },
     });
   }
@@ -36,9 +34,10 @@ export class UserDAO {
 
   async update(id: string, data: UpdateUserDTO): Promise<User | null> {
     try {
+      const { password, ...profile } = data;
       return await prisma.user.update({
         where: { id },
-        data,
+        data: { ...profile, ...(password ? { passwordHash: password } : {}) },
       });
     } catch {
       return null;
@@ -47,8 +46,9 @@ export class UserDAO {
 
   async delete(id: string): Promise<User | null> {
     try {
-      return await prisma.user.delete({
+      return await prisma.user.update({
         where: { id },
+        data: { deletedAt: new Date(), status: "INACTIVE", isActive: false },
       });
     } catch {
       return null;

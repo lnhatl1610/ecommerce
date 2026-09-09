@@ -1,0 +1,12 @@
+import { Router } from "express";
+import { requireAuth, requireRole } from "../../middlewares/auth.middleware.js";
+import { validateBody } from "../../middlewares/validate.middleware.js";
+import { ReviewController } from "./review.controller.js";
+import { createReviewSchema, updateReviewSchema } from "./review.schema.js";
+const reviewRouter = Router(); const controller = new ReviewController();
+reviewRouter.get("/", requireAuth, requireRole("ADMIN", "STAFF"), controller.listAll);
+reviewRouter.get("/product/:productId", controller.list);
+reviewRouter.post("/", requireAuth, validateBody(createReviewSchema), controller.create);
+reviewRouter.put("/:id", requireAuth, validateBody(updateReviewSchema), controller.update);
+reviewRouter.delete("/:id", requireAuth, controller.delete);
+export { reviewRouter };

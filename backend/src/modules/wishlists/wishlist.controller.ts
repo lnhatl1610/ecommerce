@@ -1,0 +1,4 @@
+import type { Request, Response } from "express";
+import { sendError, sendSuccess } from "../../lib/response.js";
+import { WishlistService } from "./wishlist.service.js";
+export class WishlistController { constructor(private readonly service: WishlistService = new WishlistService()) {} list = async (req: Request, res: Response) => sendSuccess(res, await this.service.list(req.user!.userId)); add = async (req: Request, res: Response) => { try { return sendSuccess(res, await this.service.add(req.user!.userId, req.body.productId as string), "Added to wishlist", 201); } catch { return sendError(res, "Product not found", 404); } }; remove = async (req: Request, res: Response) => { await this.service.remove(req.user!.userId, req.params.productId as string); return sendSuccess(res, null, "Removed from wishlist"); }; }

@@ -1,0 +1,1 @@
+export function EmptyState({ title, description = "Chưa có dữ liệu để hiển thị." }: { title: string; description?: string }) { return <div className="rounded-2xl border border-dashed p-12 text-center"><h2 className="font-semibold">{title}</h2><p className="mt-2 text-sm text-stone-500">{description}</p></div>; }

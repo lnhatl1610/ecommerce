@@ -19,7 +19,7 @@ export class AuthRepository {
   async create(data: {
     name: string;
     email: string;
-    password: string;
+    passwordHash: string;
     phone?: string;
   }): Promise<User> {
     return await this.authDAO.create(data);
@@ -28,4 +28,8 @@ export class AuthRepository {
   async updateLastLogin(id: string): Promise<User> {
     return await this.authDAO.updateLastLogin(id);
   }
+
+  createPasswordResetToken(userId: string, tokenHash: string, expiresAt: Date): Promise<void> { return this.authDAO.createPasswordResetToken(userId, tokenHash, expiresAt); }
+  resetPassword(tokenHash: string, password: string): Promise<boolean> { return this.authDAO.resetPassword(tokenHash, password); }
+  updatePassword(id: string, password: string): Promise<void> { return this.authDAO.updatePassword(id, password); }
 }

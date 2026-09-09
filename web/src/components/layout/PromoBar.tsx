@@ -1,0 +1,3 @@
+import { X } from "lucide-react";
+import { useState } from "react";
+export function PromoBar() { const [visible, setVisible] = useState(true); if (!visible) return null; return <div className="relative flex min-h-9 items-center justify-center gap-2 bg-black px-4 text-center text-xs font-medium text-white sm:text-sm">Sign up and get 20% off your first order. <a href="/register" className="underline underline-offset-2">Sign Up Now</a><button type="button" onClick={() => setVisible(false)} aria-label="Đóng thông báo" className="absolute right-4 rounded-full p-1 transition hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/70"><X size={15}/></button></div>; }

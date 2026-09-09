@@ -25,7 +25,7 @@ export interface ProductQueryParams {
   categoryId?: string;
   minPrice?: number;
   maxPrice?: number;
-  status?: ProductStatus;
+  status?: ProductStatus | "ALL";
   page?: number;
   limit?: number;
   sortBy?: "basePrice" | "createdAt" | "name";

@@ -51,3 +51,15 @@ Vui lòng đọc các file quy chuẩn chuyên biệt khi làm việc trong từ
 * Backend: Tham khảo [backend/AGENTS.md](./backend/AGENTS.md)
 * Dashboard: Tham khảo [dashboard/AGENTS.md](./dashboard/AGENTS.md)
 
+---
+
+## 5. Quy Trình Git & GitHub Bắt Buộc
+
+- Không push trực tiếp vào `main`; mọi thay đổi phải đi qua branch và Pull Request.
+- Đặt tên branch theo dạng `feat/<domain>-<description>`, `fix/<domain>-<description>`, `refactor/...` hoặc `chore/...`.
+- Commit phải dùng Conventional Commits, ví dụ `feat(web): add account overview`.
+- PR phải mô tả phạm vi thay đổi, migration/env mới, cách kiểm thử và screenshot nếu có thay đổi UI.
+- Trước khi mở PR phải chạy `npm run check`, `npm test`, build dashboard và build web phù hợp với phạm vi thay đổi.
+- Không sửa hoặc xóa migration đã chạy trên môi trường dùng chung; migration mới phải commit cùng code sử dụng nó.
+- Không commit secrets, `.env`, token, mật khẩu hoặc dữ liệu production.
+- Chi tiết workflow nằm tại [docs/git-workflow.md](./docs/git-workflow.md); khi cần tự động hóa quy trình này, dùng skill `git-github-workflow`.

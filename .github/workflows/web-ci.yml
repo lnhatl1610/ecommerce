@@ -1,0 +1,28 @@
+name: Web CI
+
+on:
+  pull_request:
+    paths:
+      - "web/**"
+      - "package-lock.json"
+      - ".github/workflows/web-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "web/**"
+      - "package-lock.json"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint --workspace web
+      - run: npm run typecheck --workspace web
+      - run: npm run test --workspace web
+      - run: npm run build --workspace web

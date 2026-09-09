@@ -3,6 +3,8 @@ import { CategoryService } from "./category.service.js";
 import type { CreateCategoryDTO, UpdateCategoryDTO } from "./category.dto.js";
 import { sendSuccess, sendError } from "../../lib/response.js";
 
+const getErrorMessage = (error: unknown): string => error instanceof Error ? error.message : "Unknown error";
+
 export class CategoryController {
   private categoryService: CategoryService;
 
@@ -15,11 +17,11 @@ export class CategoryController {
       const data: CreateCategoryDTO = req.body;
       const category = await this.categoryService.createCategory(data);
       return sendSuccess(res, category, "Category created successfully", 201);
-    } catch (err: any) {
-      if (err.message?.includes("already exists")) {
-        return sendError(res, err.message, 409);
+    } catch (err: unknown) {
+      if (getErrorMessage(err).includes("already exists")) {
+        return sendError(res, getErrorMessage(err), 409);
       }
-      return sendError(res, "Failed to create category", 500, err.message ?? err);
+      return sendError(res, "Failed to create category", 500, getErrorMessage(err));
     }
   };
 
@@ -28,8 +30,8 @@ export class CategoryController {
       const onlyRoot = req.query.root === "true";
       const categories = await this.categoryService.getAllCategories(onlyRoot);
       return sendSuccess(res, categories, "Categories fetched successfully");
-    } catch (err: any) {
-      return sendError(res, "Failed to fetch categories", 500, err.message ?? err);
+    } catch (err: unknown) {
+      return sendError(res, "Failed to fetch categories", 500, getErrorMessage(err));
     }
   };
 
@@ -47,8 +49,8 @@ export class CategoryController {
       }
 
       return sendSuccess(res, category, "Category fetched successfully");
-    } catch (err: any) {
-      return sendError(res, "Failed to fetch category", 500, err.message ?? err);
+    } catch (err: unknown) {
+      return sendError(res, "Failed to fetch category", 500, getErrorMessage(err));
     }
   };
 
@@ -66,8 +68,8 @@ export class CategoryController {
       }
 
       return sendSuccess(res, category, "Category fetched successfully");
-    } catch (err: any) {
-      return sendError(res, "Failed to fetch category", 500, err.message ?? err);
+    } catch (err: unknown) {
+      return sendError(res, "Failed to fetch category", 500, getErrorMessage(err));
     }
   };
 
@@ -86,11 +88,11 @@ export class CategoryController {
       }
 
       return sendSuccess(res, category, "Category updated successfully");
-    } catch (err: any) {
-      if (err.message?.includes("already exists")) {
-        return sendError(res, err.message, 409);
+    } catch (err: unknown) {
+      if (getErrorMessage(err).includes("already exists")) {
+        return sendError(res, getErrorMessage(err), 409);
       }
-      return sendError(res, "Failed to update category", 500, err.message ?? err);
+      return sendError(res, "Failed to update category", 500, getErrorMessage(err));
     }
   };
 
@@ -108,8 +110,8 @@ export class CategoryController {
       }
 
       return sendSuccess(res, null, "Category deleted successfully");
-    } catch (err: any) {
-      return sendError(res, "Failed to delete category", 500, err.message ?? err);
+    } catch (err: unknown) {
+      return sendError(res, "Failed to delete category", 500, getErrorMessage(err));
     }
   };
 }

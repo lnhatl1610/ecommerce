@@ -1,0 +1,14 @@
+import { z } from "zod";
+
+export const createQuestionSchema = z.object({ productId: z.string().uuid(), content: z.string().trim().min(5).max(1000) });
+export const createAnswerSchema = z.object({ content: z.string().trim().min(2).max(2000) });
+export const recordViewSchema = z.object({ sessionId: z.string().trim().max(120).optional() });
+export const shippingQuoteSchema = z.object({ provinceCode: z.string().trim().min(1).max(20), subtotal: z.coerce.number().min(0).default(0) });
+export const createReturnSchema = z.object({ orderId: z.string().uuid(), reason: z.string().trim().min(5).max(2000), items: z.array(z.object({ orderItemId: z.string().uuid(), quantity: z.number().int().positive(), condition: z.string().trim().max(500).optional() })).min(1) });
+export const createBrandSchema = z.object({ name: z.string().trim().min(2).max(120), slug: z.string().trim().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/), logoUrl: z.string().url().optional() });
+export const createMediaSchema = z.object({ productId: z.string().uuid(), variantId: z.string().uuid().optional(), type: z.enum(["IMAGE", "VIDEO"]), url: z.string().url(), altText: z.string().trim().max(300).optional(), position: z.number().int().min(0).optional() });
+export const createPromotionSchema = z.object({ name: z.string().trim().min(2).max(200), discountType: z.enum(["PERCENTAGE", "FIXED"]), discountValue: z.number().positive(), startsAt: z.string().datetime(), endsAt: z.string().datetime(), priority: z.number().int().optional(), productIds: z.array(z.string().uuid()).optional(), categoryIds: z.array(z.string().uuid()).optional() }).refine((data) => new Date(data.endsAt) > new Date(data.startsAt), "endsAt must be after startsAt");
+export const createShippingZoneSchema = z.object({ name: z.string().trim().min(2).max(120), provinces: z.array(z.object({ provinceCode: z.string().trim().min(1).max(20), provinceName: z.string().trim().min(2).max(120) })).min(1), rates: z.array(z.object({ name: z.string().trim().min(2).max(120), fee: z.number().min(0), freeFrom: z.number().min(0).optional(), minDays: z.number().int().positive(), maxDays: z.number().int().positive() })).min(1) });
+export const createBundleSchema = z.object({ name: z.string().trim().min(2).max(200), productId: z.string().uuid(), items: z.array(z.object({ componentProductId: z.string().uuid(), quantity: z.number().int().positive().optional() })).min(1), discountType: z.enum(["PERCENTAGE", "FIXED"]).optional(), discountValue: z.number().positive().optional() });
+export const inventoryAdjustmentSchema = z.object({ variantId: z.string().uuid(), quantity: z.number().int().refine((value) => value !== 0, "quantity must not be zero"), note: z.string().trim().max(500).optional() });
+export const updateReturnStatusSchema = z.object({ status: z.enum(["REQUESTED", "APPROVED", "REJECTED", "RECEIVED", "REFUNDED", "CANCELLED"]) });

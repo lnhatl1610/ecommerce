@@ -1,4 +1,5 @@
 export type ProductStatus = "DRAFT" | "ACTIVE" | "ARCHIVED";
+export type JsonAttributeValue = string | number | boolean | null;
 
 export interface Category {
     id: string;
@@ -16,7 +17,7 @@ export interface ProductVariant {
     id: string;
     productId: string;
     sku: string;
-    attributes: Record<string, any>;
+    attributes: Record<string, JsonAttributeValue>;
     price: number;
     stockQuantity: number;
     createdAt: string;
@@ -64,9 +65,13 @@ export interface CreateProduct {
 
 export interface CreateProductVariant {
     sku: string;
-    attributes?: Record<string, any>;
+    attributes?: Record<string, JsonAttributeValue>;
     price: number;
     stockQuantity?: number;
+}
+
+export interface UpdateProductVariant extends Partial<CreateProductVariant> {
+    id: string;
 }
 
 export interface UpdateProduct extends Partial<CreateProduct> {
@@ -78,7 +83,7 @@ export interface ProductQueryParams {
     categoryId?: string;
     minPrice?: number;
     maxPrice?: number;
-    status?: ProductStatus;
+    status?: ProductStatus | "ALL";
     page?: number;
     limit?: number;
     sortBy?: "basePrice" | "createdAt" | "name";

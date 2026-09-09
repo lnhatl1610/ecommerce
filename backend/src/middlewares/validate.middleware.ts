@@ -9,7 +9,7 @@ export const validateBody = (schema: ZodTypeAny) => {
       next();
     } catch (err) {
       if (err instanceof ZodError) {
-        const errors = err.issues.map((e: any) => ({
+        const errors = err.issues.map((e) => ({
           field: e.path.join("."),
           message: e.message,
         }));
@@ -23,11 +23,13 @@ export const validateBody = (schema: ZodTypeAny) => {
 export const validateQuery = (schema: ZodTypeAny) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      req.query = await schema.parseAsync(req.query) as any;
+      const parsedQuery = await schema.parseAsync(req.query) as Request["query"];
+      Object.keys(req.query).forEach((key) => delete req.query[key]);
+      Object.assign(req.query, parsedQuery);
       next();
     } catch (err) {
       if (err instanceof ZodError) {
-        const errors = err.issues.map((e: any) => ({
+        const errors = err.issues.map((e) => ({
           field: e.path.join("."),
           message: e.message,
         }));

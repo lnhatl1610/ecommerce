@@ -1,0 +1,27 @@
+import { Router } from "express";
+import { optionalAuth, requireAuth, requireRole } from "../../middlewares/auth.middleware.js";
+import { validateBody, validateQuery } from "../../middlewares/validate.middleware.js";
+import { CatalogExperienceController } from "./catalog-experience.controller.js";
+import { createAnswerSchema, createBrandSchema, createBundleSchema, createMediaSchema, createPromotionSchema, createQuestionSchema, createReturnSchema, createShippingZoneSchema, inventoryAdjustmentSchema, recordViewSchema, shippingQuoteSchema, updateReturnStatusSchema } from "./catalog-experience.schema.js";
+
+const catalogExperienceRouter = Router();
+const controller = new CatalogExperienceController();
+catalogExperienceRouter.get("/brands", controller.brands);
+catalogExperienceRouter.get("/products/:productId", controller.product);
+catalogExperienceRouter.post("/products/:productId/views", optionalAuth, validateBody(recordViewSchema), controller.recordView);
+catalogExperienceRouter.get("/products/:productId/questions", controller.questions);
+catalogExperienceRouter.post("/questions", requireAuth, validateBody(createQuestionSchema), controller.createQuestion);
+catalogExperienceRouter.post("/questions/:questionId/answers", requireAuth, requireRole("ADMIN", "STAFF"), validateBody(createAnswerSchema), controller.createAnswer);
+catalogExperienceRouter.get("/shipping/quote", validateQuery(shippingQuoteSchema), controller.shippingQuote);
+catalogExperienceRouter.get("/returns", requireAuth, controller.returns);
+catalogExperienceRouter.post("/returns", requireAuth, validateBody(createReturnSchema), controller.createReturn);
+catalogExperienceRouter.post("/reviews/:reviewId/helpful", requireAuth, controller.helpful);
+catalogExperienceRouter.post("/admin/brands", requireAuth, requireRole("ADMIN"), validateBody(createBrandSchema), controller.createBrand);
+catalogExperienceRouter.post("/admin/media", requireAuth, requireRole("ADMIN"), validateBody(createMediaSchema), controller.createMedia);
+catalogExperienceRouter.delete("/admin/media/:id", requireAuth, requireRole("ADMIN"), controller.deleteMedia);
+catalogExperienceRouter.post("/admin/promotions", requireAuth, requireRole("ADMIN"), validateBody(createPromotionSchema), controller.createPromotion);
+catalogExperienceRouter.post("/admin/shipping-zones", requireAuth, requireRole("ADMIN"), validateBody(createShippingZoneSchema), controller.createShippingZone);
+catalogExperienceRouter.post("/admin/bundles", requireAuth, requireRole("ADMIN"), validateBody(createBundleSchema), controller.createBundle);
+catalogExperienceRouter.post("/admin/inventory/adjust", requireAuth, requireRole("ADMIN", "STAFF"), validateBody(inventoryAdjustmentSchema), controller.adjustInventory);
+catalogExperienceRouter.patch("/admin/returns/:id", requireAuth, requireRole("ADMIN", "STAFF"), validateBody(updateReturnStatusSchema), controller.updateReturnStatus);
+export { catalogExperienceRouter };

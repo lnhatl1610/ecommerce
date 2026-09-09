@@ -1,0 +1,2 @@
+import api from "@/lib/api"; import type { Coupon, CouponInput } from "./types";
+export const couponApi = { list: () => api.get<{ success: true; data: Coupon[] }>("/coupons"), create: (data: CouponInput) => api.post<{ success: true; data: Coupon }>("/coupons", data), update: (id: string, data: Partial<CouponInput>) => api.put<{ success: true; data: Coupon }>(`/coupons/${id}`, data), remove: (id: string) => api.delete(`/coupons/${id}`) };

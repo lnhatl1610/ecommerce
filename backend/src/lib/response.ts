@@ -1,10 +1,10 @@
 import type { Response } from "express";
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   message?: string;
   data?: T;
-  error?: any;
+  error?: unknown;
 }
 
 export const sendSuccess = <T>(
@@ -24,7 +24,7 @@ export const sendError = (
   res: Response,
   message = "An error occurred",
   statusCode = 500,
-  error: any = null
+  error: unknown = null
 ): Response => {
   return res.status(statusCode).json({
     success: false,

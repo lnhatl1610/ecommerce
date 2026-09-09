@@ -1,0 +1,3 @@
+import { useEffect } from "react";
+import { useUiStore } from "@/stores/uiStore";
+export function ToastViewport() { const { toasts, removeToast } = useUiStore(); useEffect(() => { const timers = toasts.map((toast) => window.setTimeout(() => removeToast(toast.id), 3000)); return () => timers.forEach(window.clearTimeout); }, [toasts, removeToast]); return <div className="fixed bottom-5 right-5 z-30 space-y-2">{toasts.map((toast) => <button key={toast.id} onClick={() => removeToast(toast.id)} className="block rounded-lg bg-black px-4 py-3 text-sm text-white shadow-lg">{toast.message}</button>)}</div>; }

@@ -1,0 +1,2 @@
+export interface User { id: string; name: string; email: string; phone?: string | null; role?: "CUSTOMER" | "STAFF" | "ADMIN"; avatar?: string | null; logoUrl?: string | null; gender?: "MALE" | "FEMALE" | "OTHER" | null; dateOfBirth?: string | null; status?: "ACTIVE" | "INACTIVE" | "BANNED"; emailVerifiedAt?: string | null; phoneVerifiedAt?: string | null; lastLoginAt?: string | null }
+export interface AuthResult { user: User; accessToken: string }

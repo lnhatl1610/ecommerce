@@ -1,28 +1,26 @@
+import { useEffect, useMemo, useState } from "react";
+import { ArrowRight, PackagePlus, ShoppingBag } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import api from "@/lib/api";
+import type { Product } from "@/features/products/types/product.types";
+import type { Order, OrderStatus } from "@/features/orders/types";
+import { DashboardSkeleton } from "@/components/Skeleton";
+import { EmptyState } from "@/components/EmptyState";
+
+interface DashboardStats { users: number; products: number; orders: number; revenue: number }
+const statuses: OrderStatus[] = ["PENDING", "CONFIRMED", "PROCESSING", "PAID", "SHIPPED", "OUT_FOR_DELIVERY", "SHIPPING", "DELIVERED", "COMPLETED", "PAYMENT_FAILED", "CANCELLED", "RETURN_REQUESTED", "RETURN_PROCESSING", "REFUNDED", "PARTIALLY_REFUNDED", "DELIVERY_FAILED"];
+const statusLabels: Record<OrderStatus, string> = { PENDING: "Chờ xác nhận", CONFIRMED: "Đã xác nhận", PROCESSING: "Đang chuẩn bị", PAID: "Đã thanh toán", SHIPPED: "Đã bàn giao vận chuyển", OUT_FOR_DELIVERY: "Đang giao tới khách", SHIPPING: "Đang giao", DELIVERED: "Đã giao", COMPLETED: "Hoàn thành", PAYMENT_FAILED: "Thanh toán thất bại", CANCELLED: "Đã hủy", RETURN_REQUESTED: "Yêu cầu đổi trả", RETURN_PROCESSING: "Đang xử lý đổi trả", REFUNDED: "Đã hoàn tiền", PARTIALLY_REFUNDED: "Hoàn tiền một phần", DELIVERY_FAILED: "Giao hàng thất bại" };
+const money = (value: number) => `${value.toLocaleString("vi-VN")} ₫`;
+
 export const DashboardPage = () => {
-    return (
-        <div className="space-y-4">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-xl font-bold text-gray-900">Dashboard</h1>
-                    <p className="text-sm text-gray-500">Welcome to your store overview</p>
-                </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-5 border rounded-lg bg-gray-50">
-                    <p className="text-sm text-gray-500">Total Users</p>
-                    <p className="text-2xl font-bold mt-1 text-gray-900">Active</p>
-                </div>
-                <div className="p-5 border rounded-lg bg-gray-50">
-                    <p className="text-sm text-gray-500">Total Products</p>
-                    <p className="text-2xl font-bold mt-1 text-gray-900">Catalog</p>
-                </div>
-                <div className="p-5 border rounded-lg bg-gray-50">
-                    <p className="text-sm text-gray-500">System Status</p>
-                    <p className="text-2xl font-bold mt-1 text-green-600">Online</p>
-                </div>
-            </div>
-        </div>
-    );
+  const navigate = useNavigate();
+  const [stats, setStats] = useState<DashboardStats | null>(null); const [orders, setOrders] = useState<Order[]>([]); const [products, setProducts] = useState<Product[]>([]); const [loading, setLoading] = useState(true); const [error, setError] = useState(""); const [range, setRange] = useState<"7" | "30">("7");
+  useEffect(() => { void Promise.all([api.get<{ data: unknown[] }>("/users"), api.get<{ data: { total: number; items: Product[] } }>("/products", { params: { status: "ALL", limit: 100 } }), api.get<{ data: Order[] }>("/orders")]).then(([users, productResponse, orderResponse]) => { const orderItems = orderResponse.data.data; const revenue = orderItems.filter((order) => order.status !== "PENDING" && order.status !== "CANCELLED").reduce((sum, order) => sum + order.totalAmount, 0); setProducts(productResponse.data.data.items); setOrders(orderItems); setStats({ users: users.data.data.length, products: productResponse.data.data.total, orders: orderItems.length, revenue }); }).catch(() => setError("Không thể tải số liệu tổng quan.")).finally(() => setLoading(false)); }, []);
+  const statusCounts = statuses.map((status) => ({ status, count: orders.filter((order) => order.status === status).length })); const maxStatus = Math.max(1, ...statusCounts.map((item) => item.count));
+  const lowStock = products.flatMap((product) => (product.variants ?? []).map((variant) => ({ product: product.name, sku: variant.sku, stock: variant.stockQuantity }))).filter((item) => item.stock < 5).sort((a, b) => a.stock - b.stock).slice(0, 6);
+  const revenuePoints = useMemo(() => { const days = Number(range); const now = new Date(); return Array.from({ length: days }, (_, index) => { const date = new Date(now); date.setDate(now.getDate() - (days - 1 - index)); const total = orders.filter((order) => { const created = new Date(order.createdAt); return created.toDateString() === date.toDateString() && order.status !== "PENDING" && order.status !== "CANCELLED"; }).reduce((sum, order) => sum + order.totalAmount, 0); return { label: `${date.getDate()}/${date.getMonth() + 1}`, total }; }); }, [orders, range]);
+  if (loading) return <DashboardSkeleton />;
+  return <div className="space-y-5">{error && <p className="rounded bg-red-50 p-3 text-sm text-red-700" role="alert">{error}</p>}<div className="flex flex-wrap items-center justify-between gap-3"><p className="text-sm text-gray-500">Tổng quan hoạt động cửa hàng</p><div className="flex gap-2"><button type="button" onClick={() => navigate("/products")} className="inline-flex items-center gap-2 rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-gray-700"><PackagePlus size={16} /> Thêm sản phẩm</button><button type="button" onClick={() => navigate("/orders")} className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm"><ShoppingBag size={16} /> Xem đơn hàng</button></div></div><div className="grid grid-cols-1 gap-4 md:grid-cols-4">{[["Người dùng", stats?.users ?? 0], ["Sản phẩm", stats?.products ?? 0], ["Đơn hàng", stats?.orders ?? 0], ["Doanh thu", money(stats?.revenue ?? 0)]].map(([label, value]) => <div key={String(label)} className="rounded-lg border bg-gray-50 p-5"><p className="text-sm text-gray-500">{label}</p><p className="mt-1 text-2xl font-bold text-gray-900">{value}</p></div>)}</div><section className="rounded-lg border bg-white p-5"><div className="mb-4 flex flex-wrap items-center justify-between gap-2"><div><h2 className="font-semibold">Doanh thu</h2><p className="text-xs text-gray-500">Theo dõi doanh thu theo ngày</p></div><select value={range} onChange={(event) => setRange(event.target.value as "7" | "30")} className="filter-control"><option value="7">7 ngày gần nhất</option><option value="30">30 ngày gần nhất</option></select></div><div className="flex h-40 items-end gap-1 overflow-x-auto">{revenuePoints.map((point) => { const max = Math.max(1, ...revenuePoints.map((item) => item.total)); return <div key={point.label} className="flex min-w-5 flex-1 flex-col items-center gap-1"><div className="w-full rounded-t bg-blue-400" style={{ height: `${Math.max(4, (point.total / max) * 100)}%` }} title={`${point.label}: ${money(point.total)}`} /><span className="text-[10px] text-gray-400">{point.label}</span></div>; })}</div></section><div className="grid gap-5 lg:grid-cols-2"><section className="rounded-lg border bg-white p-5"><h2 className="mb-4 font-semibold">Đơn hàng theo trạng thái</h2><div className="space-y-3">{statusCounts.map(({ status, count }) => <div key={status} className="flex items-center gap-3 text-sm"><span className="w-28 text-gray-600">{statusLabels[status]}</span><div className="h-3 flex-1 rounded-full bg-gray-100"><div className="h-3 rounded-full bg-gray-900" style={{ width: `${(count / maxStatus) * 100}%` }} /></div><span className="w-8 text-right font-medium">{count}</span></div>)}</div></section><section className="rounded-lg border bg-white p-5"><div className="mb-4 flex items-center justify-between"><h2 className="font-semibold">Cảnh báo tồn kho</h2><span className="rounded-full bg-amber-100 px-2 py-1 text-xs text-amber-700">&lt; 5</span></div>{lowStock.length ? <div className="space-y-3">{lowStock.map((item) => <div key={item.sku} className="flex items-center justify-between text-sm"><span><strong className="block">{item.product}</strong><span className="font-mono text-xs text-gray-500">{item.sku}</span></span><span className={item.stock === 0 ? "font-semibold text-red-600" : "font-semibold text-amber-600"}>{item.stock} còn lại</span></div>)}</div> : <EmptyState title="Tồn kho ổn định" description="Không có sản phẩm nào sắp hết hàng." />}</section></div><section className="rounded-lg border bg-white p-5"><div className="mb-4 flex items-center justify-between"><h2 className="font-semibold">Đơn hàng gần đây</h2><button type="button" onClick={() => navigate("/orders")} className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline">Xem tất cả <ArrowRight size={14} /></button></div>{orders.length ? <div className="space-y-3">{orders.slice(0, 5).map((order) => <div key={order.id} className="flex items-center justify-between text-sm"><span><span className="font-mono">#{order.id.slice(0, 8)}</span><span className="ml-2 text-gray-500">{new Date(order.createdAt).toLocaleDateString("vi-VN")}</span></span><span className="text-right"><strong className="block">{money(order.totalAmount)}</strong><span className="text-xs text-gray-500">{statusLabels[order.status]}</span></span></div>)}</div> : <EmptyState title="Chưa có đơn hàng" description="Đơn hàng mới sẽ hiển thị tại đây." />}</section></div>;
 };
 
 export default DashboardPage;

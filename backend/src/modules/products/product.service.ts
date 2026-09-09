@@ -1,6 +1,6 @@
 import { ProductRepository } from "./product.repository.js";
 import { CategoryRepository } from "../categories/category.repository.js";
-import type { CreateProductDTO, UpdateProductDTO } from "./product.dto.js";
+import type { CreateProductDTO, UpdateProductDTO, CreateProductVariantDTO, UpdateProductVariantDTO } from "./product.dto.js";
 import type {
   Product,
   ProductWithCategory,
@@ -110,5 +110,25 @@ export class ProductService {
   async deleteProduct(id: string): Promise<Product | null> {
     return await this.productRepo.delete(id);
   }
-}
 
+  async createVariant(productId: string, data: CreateProductVariantDTO) {
+    const product = await this.productRepo.findById(productId);
+    if (!product) throw new Error("Product not found");
+    const existing = await this.productRepo.findVariantBySku(data.sku.trim().toUpperCase());
+    if (existing) throw new Error(`Variant with SKU "${data.sku}" already exists`);
+    return await this.productRepo.createVariant(productId, { ...data, sku: data.sku.trim().toUpperCase() });
+  }
+
+  async updateVariant(productId: string, variantId: string, data: UpdateProductVariantDTO) {
+    if (data.sku) {
+      const existing = await this.productRepo.findVariantBySku(data.sku.trim().toUpperCase());
+      if (existing && existing.id !== variantId) throw new Error(`Variant with SKU "${data.sku}" already exists`);
+      data = { ...data, sku: data.sku.trim().toUpperCase() };
+    }
+    return await this.productRepo.updateVariant(productId, variantId, data);
+  }
+
+  async deleteVariant(productId: string, variantId: string) {
+    return await this.productRepo.deleteVariant(productId, variantId);
+  }
+}

@@ -2,20 +2,20 @@
 
 ## 0. Các thành phần cần có trong bộ planning (ngoài Skill & Rule)
 
-| Thành phần | Mục đích |
-|---|---|
-| **PRD (Product Requirements)** | Mô tả tính năng, phạm vi, người dùng mục tiêu — agent dựa vào đây để không "bịa" scope |
-| **Architecture Doc** | Sơ đồ hệ thống, luồng dữ liệu, quyết định công nghệ (vì sao chọn X thay vì Y) |
-| **Project Structure** | Cây thư mục chuẩn, quy ước đặt tên file/folder |
-| **Database Schema / ERD** | Model, quan hệ, index, migration convention |
-| **API Spec** | Danh sách endpoint, request/response, mã lỗi chuẩn |
-| **Coding Convention** | Style guide, lint/format rule, quy ước commit (Conventional Commits), branch strategy |
-| **Testing Strategy** | Unit/integration/e2e, coverage tối thiểu, thư viện dùng |
-| **Environment & Config** | `.env` mẫu, cách quản lý secret theo môi trường (dev/staging/prod) |
-| **Security Checklist** | Auth, input validation, rate limit, CORS, OWASP top 10 |
-| **CI/CD Plan** | Pipeline build/test/deploy, môi trường staging |
-| **Task Breakdown / Roadmap** | Chia theo milestone, để agent làm từng phần nhỏ, review được |
-| **Definition of Done** | Tiêu chí để agent biết khi nào 1 task hoàn thành (test pass, lint pass, review) |
+| Thành phần | File | Mục đích |
+|---|---|---|
+| **PRD** | [docs/PRD.md](./docs/PRD.md) | Phạm vi & persona |
+| **Architecture** | [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | Sơ đồ hệ thống, quyết định tech |
+| **Project Structure** | [docs/PROJECT_STRUCTURE.md](./docs/PROJECT_STRUCTURE.md) | Cây thư mục & naming |
+| **Database / ERD** | [docs/DATABASE.md](./docs/DATABASE.md) | Model, index, migration |
+| **API Spec** | [docs/API_SPEC.md](./docs/API_SPEC.md) | Endpoint & mã lỗi |
+| **Coding Convention** | [docs/CODING_CONVENTION.md](./docs/CODING_CONVENTION.md) | Style, commit, branch |
+| **Testing Strategy** | [docs/TESTING_STRATEGY.md](./docs/TESTING_STRATEGY.md) | Unit/integration/e2e |
+| **Environment** | [docs/ENVIRONMENT.md](./docs/ENVIRONMENT.md) | `.env` & secrets |
+| **Security Checklist** | [docs/SECURITY_CHECKLIST.md](./docs/SECURITY_CHECKLIST.md) | Auth, CORS, OWASP |
+| **CI/CD Plan** | [docs/CICD.md](./docs/CICD.md) | Pipeline & deploy |
+| **Roadmap** | [docs/ROADMAP.md](./docs/ROADMAP.md) | Milestone breakdown |
+| **Definition of Done** | [docs/DEFINITION_OF_DONE.md](./docs/DEFINITION_OF_DONE.md) | Tiêu chí hoàn thành task |
 
 ---
 
@@ -184,7 +184,7 @@ Mọi API prefix bắt đầu bằng `/api/`:
 ## 8. Lộ Trình Phát Triển (7 Milestones)
 
 - [x] **Milestone 1: Setup Foundation**: Monorepo, PostgreSQL, Prisma Schema, Rules & Skills, Definition of Done.
-- [ ] **Milestone 2: Auth & User Management**: Đăng ký, đăng nhập JWT, cookie, profile, sổ địa chỉ.
+- [x] **Milestone 2: Auth & User Management**: Đăng ký, đăng nhập JWT, cookie, profile, sổ địa chỉ.
 - [ ] **Milestone 3: Product & Category Core**: Quản lý danh mục cha-con, sản phẩm & biến thể variant, ảnh, filter/search API.
 - [ ] **Milestone 4: Cart & Checkout**: Giỏ hàng guest & user, coupon validation, atomic transaction checkout.
 - [ ] **Milestone 5: Order & Payment**: Cổng thanh toán, webhook, quản lý trạng thái đơn hàng.

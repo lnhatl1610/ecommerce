@@ -1,0 +1,15 @@
+---
+description: Git and GitHub workflow for the ecommerce monorepo
+alwaysApply: true
+---
+
+# Git/GitHub Workflow
+
+- Never push directly to `main`; create a branch and open a Pull Request.
+- Use branch names such as `feat/<domain>-<description>`, `fix/<domain>-<description>`, `refactor/...`, or `chore/...`.
+- Use Conventional Commits: `feat(backend): add order endpoint`.
+- Keep commits focused; do not mix unrelated backend, dashboard, web, migration, and CI changes.
+- Before opening a PR, run the checks required by the changed workspaces.
+- PRs must document behavior changes, migrations, environment variables, tests, and UI screenshots where applicable.
+- Never commit `.env`, credentials, access tokens, production data, or generated secrets.
+- Do not rewrite or delete migrations that have already been applied to a shared database.

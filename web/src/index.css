@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+:root { color-scheme: light; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  min-width: 320px;
+  overflow-x: hidden;
+  font-family: "Geist Variable", "Arial", ui-sans-serif, system-ui, sans-serif;
+  background: #fff;
+  color: #000;
+}
+
+.home-display {
+  font-family: "Arial Black", "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 950;
+  letter-spacing: -0.055em;
+  text-transform: uppercase;
+}

@@ -1,0 +1,1 @@
+export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) { return <div className="rounded-2xl border border-red-200 bg-red-50 p-8 text-center text-red-700"><p>{message}</p>{onRetry && <button onClick={onRetry} className="mt-4 rounded-full bg-red-700 px-4 py-2 text-sm text-white">Thử lại</button>}</div>; }

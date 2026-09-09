@@ -4,4 +4,4 @@ export type { Role };
 
 export interface User extends PrismaUser { }
 
-export type SafeUser = Omit<User, "password">;
+export type SafeUser = Omit<User, "passwordHash">;
