@@ -1,7 +1,6 @@
 import type { CookieOptions, Response } from "express";
 
 export type AuthClient = "storefront" | "dashboard";
-export const REFRESH_TOKEN_COOKIE = "refreshToken";
 export const STOREFRONT_REFRESH_TOKEN_COOKIE = "storefrontRefreshToken";
 export const DASHBOARD_REFRESH_TOKEN_COOKIE = "dashboardRefreshToken";
 
@@ -30,9 +29,6 @@ export const setRefreshTokenCookie = (res: Response, token: string, client: Auth
 };
 
 export const clearRefreshTokenCookie = (res: Response): void => {
-  res.clearCookie(REFRESH_TOKEN_COOKIE, getRefreshCookieOptions());
   res.clearCookie(STOREFRONT_REFRESH_TOKEN_COOKIE, getRefreshCookieOptions());
   res.clearCookie(DASHBOARD_REFRESH_TOKEN_COOKIE, getRefreshCookieOptions());
-  // Remove cookies created by older builds that used the narrower path.
-  res.clearCookie(REFRESH_TOKEN_COOKIE, { ...getRefreshCookieOptions(), path: "/api/auth" });
 };

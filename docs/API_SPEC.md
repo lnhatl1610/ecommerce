@@ -10,7 +10,7 @@ Envelope error: `{ success: false, message, error }`
 |---|---|---|---|
 | POST | `/register` | Public | `{ name, email, password, phone? }` → user + accessToken; set refresh cookie |
 | POST | `/login` | Public | `{ email, password }` → same; rate-limited |
-| POST | `/refresh` | Cookie | Đọc `refreshToken` cookie → `{ accessToken }` |
+| POST | `/refresh` | Cookie | Đọc `storefrontRefreshToken` hoặc `dashboardRefreshToken` theo `X-Client-App` → `{ accessToken }` |
 | POST | `/logout` | Public | Clear refresh cookie |
 
 ## Users — `/api/users`

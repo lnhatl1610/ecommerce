@@ -43,7 +43,7 @@
 
 ## 4. Auth Flow
 
-1. Login/Register → set `refreshToken` httpOnly cookie; trả `accessToken` + user trong body.
+1. Login/Register → set `storefrontRefreshToken` hoặc `dashboardRefreshToken` httpOnly cookie; trả `accessToken` + user trong body.
 2. API calls dùng access token.
 3. 401 → client gọi `POST /api/auth/refresh` (cookie) → access mới.
 4. Logout → clear cookie.
