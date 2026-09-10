@@ -1,5 +1,5 @@
 // Prisma schema file for E-commerce System
-// Compliant with PLANNING.md specifications
+// Compliant with docs/planning.md specifications
 
 generator client {
   provider = "prisma-client-js"

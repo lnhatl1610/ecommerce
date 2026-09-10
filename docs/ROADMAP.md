@@ -1,6 +1,6 @@
 # Task Breakdown / Roadmap
 
-Chi tiết khớp `PLANNING.md` §8.
+Chi tiết khớp [`planning.md`](./planning.md) §8.
 
 | # | Milestone | Deliverables | Status |
 |---|---|---|---|

@@ -1,21 +1,21 @@
-# PLANNING.md — Dự án E-commerce (Express + React + shadcn/ui + PostgreSQL)
+# Planning — Dự án E-commerce (Express + React + shadcn/ui + PostgreSQL)
 
 ## 0. Các thành phần cần có trong bộ planning (ngoài Skill & Rule)
 
 | Thành phần | File | Mục đích |
 |---|---|---|
-| **PRD** | [docs/PRD.md](./docs/PRD.md) | Phạm vi & persona |
-| **Architecture** | [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | Sơ đồ hệ thống, quyết định tech |
-| **Project Structure** | [docs/PROJECT_STRUCTURE.md](./docs/PROJECT_STRUCTURE.md) | Cây thư mục & naming |
-| **Database / ERD** | [docs/DATABASE.md](./docs/DATABASE.md) | Model, index, migration |
-| **API Spec** | [docs/API_SPEC.md](./docs/API_SPEC.md) | Endpoint & mã lỗi |
-| **Coding Convention** | [docs/CODING_CONVENTION.md](./docs/CODING_CONVENTION.md) | Style, commit, branch |
-| **Testing Strategy** | [docs/TESTING_STRATEGY.md](./docs/TESTING_STRATEGY.md) | Unit/integration/e2e |
-| **Environment** | [docs/ENVIRONMENT.md](./docs/ENVIRONMENT.md) | `.env` & secrets |
-| **Security Checklist** | [docs/SECURITY_CHECKLIST.md](./docs/SECURITY_CHECKLIST.md) | Auth, CORS, OWASP |
-| **CI/CD Plan** | [docs/CICD.md](./docs/CICD.md) | Pipeline & deploy |
-| **Roadmap** | [docs/ROADMAP.md](./docs/ROADMAP.md) | Milestone breakdown |
-| **Definition of Done** | [docs/DEFINITION_OF_DONE.md](./docs/DEFINITION_OF_DONE.md) | Tiêu chí hoàn thành task |
+| **PRD** | [PRD.md](./PRD.md) | Phạm vi & persona |
+| **Architecture** | [ARCHITECTURE.md](./ARCHITECTURE.md) | Sơ đồ hệ thống, quyết định tech |
+| **Project Structure** | [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) | Cây thư mục & naming |
+| **Database / ERD** | [DATABASE.md](./DATABASE.md) | Model, index, migration |
+| **API Spec** | [API_SPEC.md](./API_SPEC.md) | Endpoint & mã lỗi |
+| **Coding Convention** | [CODING_CONVENTION.md](./CODING_CONVENTION.md) | Style, commit, branch |
+| **Testing Strategy** | [TESTING_STRATEGY.md](./TESTING_STRATEGY.md) | Unit/integration/e2e |
+| **Environment** | [ENVIRONMENT.md](./ENVIRONMENT.md) | `.env` & secrets |
+| **Security Checklist** | [SECURITY_CHECKLIST.md](./SECURITY_CHECKLIST.md) | Auth, CORS, OWASP |
+| **CI/CD Plan** | [CICD.md](./CICD.md) | Pipeline & deploy |
+| **Roadmap** | [ROADMAP.md](./ROADMAP.md) | Milestone breakdown |
+| **Definition of Done** | [DEFINITION_OF_DONE.md](./DEFINITION_OF_DONE.md) | Tiêu chí hoàn thành task |
 
 ---
 
@@ -73,7 +73,7 @@ ecommerce/
 ├── .agents/                    # Bộ quy chuẩn Skills cho AI Coding Agent
 │   └── skills/
 ├── AGENTS.md                   # Quy chuẩn chung monorepo
-├── PLANNING.md                 # Single source of truth của dự án
+├── docs/planning.md            # Kế hoạch kỹ thuật và single source of truth
 └── package.json                # npm workspaces root config
 ```
 

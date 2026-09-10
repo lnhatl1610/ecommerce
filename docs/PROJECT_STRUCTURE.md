@@ -35,7 +35,7 @@ ecommerce/
 ├── docs/                    # Planning artifacts
 ├── .agents/skills/
 ├── AGENTS.md
-├── PLANNING.md
+├── docs/planning.md
 └── package.json             # npm workspaces
 ```
 
