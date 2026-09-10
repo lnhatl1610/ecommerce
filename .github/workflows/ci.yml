@@ -16,5 +16,8 @@ jobs:
       - run: npm --workspace=backend exec prisma generate
       - run: npm run check
       - run: npm test
+      - run: npm run lint --workspace=web
+      - run: npm run typecheck --workspace=web
+      - run: npm run test --workspace=web
       - run: npm --workspace=dashboard run build
       - run: npm --workspace=web run build
