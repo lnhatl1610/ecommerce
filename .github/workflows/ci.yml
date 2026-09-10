@@ -13,6 +13,7 @@ jobs:
         with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: npm --workspace=backend exec prisma validate
+      - run: npm --workspace=backend exec prisma generate
       - run: npm run check
       - run: npm test
       - run: npm --workspace=dashboard run build
