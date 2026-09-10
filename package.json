@@ -9,12 +9,12 @@
   "scripts": {
     "dev:backend": "npm --workspace=backend run dev",
     "dev:dashboard": "npm --workspace=dashboard run dev",
-    "dev": "concurrently -n \"BACKEND,DASHBOARD\" -c \"blue,green\" \"npm run dev:backend\" \"npm run dev:dashboard\"",
+    "dev:web": "npm --workspace=web run dev",
+    "dev": "concurrently -n \"BACKEND,DASHBOARD,WEB\" -c \"blue,green,magenta\" \"npm run dev:backend\" \"npm run dev:dashboard\" \"npm run dev:web\"",
     "check:backend": "npm --workspace=backend exec tsc -- --noEmit",
     "check:dashboard": "npm --workspace=dashboard exec tsc -- --noEmit",
     "check:web": "npm --workspace=web exec tsc -- --noEmit",
     "check": "npm run check:backend && npm run check:dashboard && npm run check:web",
-    "dev:web": "npm --workspace=web run dev",
     "test": "npm --workspace=backend test",
     "test:e2e": "playwright test"
   },
