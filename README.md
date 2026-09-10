@@ -215,6 +215,8 @@ URLs local:
 | `POST` | `/api/orders` | Tạo order |
 | `GET` | `/api/account/overview` | Tổng quan account |
 
+Khi backend đang chạy, xem và gọi thử API bằng [Swagger UI](http://localhost:3000/api-docs). Đặc tả OpenAPI được duy trì tại `backend/src/docs/openapi.ts`.
+
 Xem toàn bộ API tại [docs/API_SPEC.md](docs/API_SPEC.md).
 
 ## Testing và CI

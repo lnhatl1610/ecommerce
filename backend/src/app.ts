@@ -17,6 +17,7 @@ import { paymentRouter } from "./modules/payments/payment.route.js";
 import { uploadRouter } from "./modules/upload/upload.route.js";
 import { catalogExperienceRouter } from "./modules/catalog-experience/catalog-experience.route.js";
 import { accountRouter } from "./modules/account/account.route.js";
+import { swaggerHandler, swaggerMiddleware } from "./docs/swagger.js";
 
 const app: Application = express();
 
@@ -36,6 +37,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use((req, _res, next) => { console.info(JSON.stringify({ level: "info", method: req.method, path: req.path, at: new Date().toISOString() })); next(); });
 app.get("/health", (_req, res) => res.json({ status: "ok" }));
+app.use("/api-docs", swaggerMiddleware, swaggerHandler);
 
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);

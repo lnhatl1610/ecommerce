@@ -1,5 +1,12 @@
 # API Specification
 
+Interactive documentation is available when the backend is running:
+
+- Swagger UI: `http://localhost:3000/api-docs`
+- OpenAPI source: `backend/src/docs/openapi.ts`
+
+The OpenAPI document covers the main public and authenticated endpoints. Keep it synchronized when adding or changing routes.
+
 Base URL: `/api`  
 Envelope success: `{ success: true, message, data }`  
 Envelope error: `{ success: false, message, error }`
